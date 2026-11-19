@@ -1,0 +1,61 @@
+Day 2 – Terminal, OS & Developer Environment
+Here is a simple explanation of each topic with examples so you can understand it and explain your learning to your senior.
+
+1. Terminal Fundamentals and Linux Basics
+Terminal: A tool where we give commands to the computer instead of using a mouse.
+
+
+Linux: An operating system commonly used for servers and development.
+- pwd – Shows the current working directory.
+- ls -la – Shows all files and folders, including hidden files.
+- cd foldername – Moves into a folder.
+2. File and Folder Operations
+
+
+These commands help us create, manage and delete files and folders.
+- mkdir test – Creates a new folder.
+- touch file.txt – Creates an empty file.
+- rm file.txt – Deletes a file.
+- rm -rf folder – Deletes a folder and all its contents. Be careful because this is permanent.
+
+
+3. Process and Port Management
+
+Process: A program currently running on the computer.
+
+Port: A communication endpoint used by applications.
+- ps aux – Shows running processes.
+- kill -9 PID – Forcefully stops a process using its process ID.
+- lsof -i :3000 – Shows which process is using port 3000.
+
+
+
+4. Environment Variables and PATH
+Environment variables: Store system or application configuration values.
+
+PATH: Tells the operating system where to look for executable commands.
+
+Example:
+echo $PATH
+export MY_NAME="Developer"
+echo $MY_NAME
+
+
+5. Package Managers (pip and npm)
+Package managers help us install and manage software libraries.
+
+- pip: Used to install Python packages.
+pip install requests
+
+
+- npm: Used to install Node.js packages.
+npm install express
+
+
+6. Git Fundamentals and Version Control
+Git: A tool used to track code changes and manage project versions.
+
+Common commands:
+- git init – Initializes a Git repository.
+- git add . – Adds all changes to staging.
+- git commit -m "message" – Saves changes in Git history.
