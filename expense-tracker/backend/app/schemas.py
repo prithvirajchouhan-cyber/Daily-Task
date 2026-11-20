@@ -1,9 +1,32 @@
-
 from datetime import date
 from pydantic import BaseModel, Field
 
 
-# Used when creating a new expense
+# Registration schema
+class UserRegister(BaseModel):
+    username: str = Field(min_length=3, max_length=50)
+    password: str = Field(min_length=8)
+
+
+# Login schema
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+
+# Refresh token schema
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+# Token response schema
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+
+
+# Expense creation schema
 class ExpenseCreate(BaseModel):
     title: str = Field(min_length=2)
     amount: float = Field(gt=0)
@@ -11,7 +34,7 @@ class ExpenseCreate(BaseModel):
     expense_date: date
 
 
-# Used when updating an existing expense
+# Expense update schema
 class ExpenseUpdate(BaseModel):
     title: str = Field(min_length=2)
     amount: float = Field(gt=0)

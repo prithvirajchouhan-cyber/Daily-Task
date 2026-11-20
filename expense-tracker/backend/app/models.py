@@ -1,6 +1,11 @@
+# Temporary in-memory storage for users
+users = {}
 
-# Temporary storage for expenses
+# Temporary in-memory storage for expenses
 expenses = {}
 
-# Automatically generated ID
+# Temporary storage for refresh tokens
+refresh_tokens = {}
+
+# Automatically generated expense ID
 next_id = 1

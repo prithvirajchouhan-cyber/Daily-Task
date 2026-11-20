@@ -1,8 +1,14 @@
-
-from fastapi import APIRouter, HTTPException, status
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    status,
+    Depends
+)
 
 from app import models
 from app.schemas import ExpenseCreate, ExpenseUpdate
+from app.dependencies import get_current_user
+
 
 router = APIRouter(
     prefix="/api/v1/expenses",
@@ -10,16 +16,22 @@ router = APIRouter(
 )
 
 
-# 1. CREATE - Add a new expense
+# 1. CREATE EXPENSE
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def create_expense(expense: ExpenseCreate):
+def create_expense(
+    expense: ExpenseCreate,
+    current_user: dict = Depends(get_current_user)
+):
 
     new_id = models.next_id
 
     new_expense = expense.model_dump(mode="json")
+
     new_expense["id"] = new_id
+    new_expense["user_id"] = current_user["id"]
 
     models.expenses[new_id] = new_expense
+
     models.next_id += 1
 
     return {
@@ -28,21 +40,37 @@ def create_expense(expense: ExpenseCreate):
     }
 
 
-# 2. READ - Get all expenses
+# 2. GET ALL EXPENSES
 @router.get("/")
-def get_all_expenses():
+def get_all_expenses(
+    current_user: dict = Depends(get_current_user)
+):
+
+    user_expenses = [
+        expense
+        for expense in models.expenses.values()
+        if expense["user_id"] == current_user["id"]
+    ]
 
     return {
         "message": "All expenses",
-        "data": list(models.expenses.values())
+        "data": user_expenses
     }
 
 
-# 3. READ - Get one expense by ID
+# 3. GET ONE EXPENSE
 @router.get("/{expense_id}")
-def get_expense(expense_id: int):
+def get_expense(
+    expense_id: int,
+    current_user: dict = Depends(get_current_user)
+):
 
-    if expense_id not in models.expenses:
+    expense = models.expenses.get(expense_id)
+
+    if (
+        expense is None
+        or expense["user_id"] != current_user["id"]
+    ):
         raise HTTPException(
             status_code=404,
             detail="Expense not found"
@@ -50,22 +78,33 @@ def get_expense(expense_id: int):
 
     return {
         "message": "Expense found",
-        "data": models.expenses[expense_id]
+        "data": expense
     }
 
 
-# 4. UPDATE - Update an existing expense
+# 4. UPDATE EXPENSE
 @router.put("/{expense_id}")
-def update_expense(expense_id: int, expense: ExpenseUpdate):
+def update_expense(
+    expense_id: int,
+    expense: ExpenseUpdate,
+    current_user: dict = Depends(get_current_user)
+):
 
-    if expense_id not in models.expenses:
+    existing_expense = models.expenses.get(expense_id)
+
+    if (
+        existing_expense is None
+        or existing_expense["user_id"] != current_user["id"]
+    ):
         raise HTTPException(
             status_code=404,
             detail="Expense not found"
         )
 
     updated_expense = expense.model_dump(mode="json")
+
     updated_expense["id"] = expense_id
+    updated_expense["user_id"] = current_user["id"]
 
     models.expenses[expense_id] = updated_expense
 
@@ -75,11 +114,19 @@ def update_expense(expense_id: int, expense: ExpenseUpdate):
     }
 
 
-# 5. DELETE - Delete an expense
+# 5. DELETE EXPENSE
 @router.delete("/{expense_id}")
-def delete_expense(expense_id: int):
+def delete_expense(
+    expense_id: int,
+    current_user: dict = Depends(get_current_user)
+):
 
-    if expense_id not in models.expenses:
+    existing_expense = models.expenses.get(expense_id)
+
+    if (
+        existing_expense is None
+        or existing_expense["user_id"] != current_user["id"]
+    ):
         raise HTTPException(
             status_code=404,
             detail="Expense not found"

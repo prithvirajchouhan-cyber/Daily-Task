@@ -1,17 +1,18 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import router
+from app.routes import router as expense_router
+from app.auth_routes import router as auth_router
 
-# Create FastAPI application
+
 app = FastAPI(
     title="Personal Expense Tracker",
-    description="A beginner-friendly CRUD API",
-    version="1.0.0"
+    description="Expense Tracker API with JWT Authentication",
+    version="2.0.0"
 )
 
-# Allow frontend to communicate with backend
+
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -23,12 +24,15 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Connect API routes
-app.include_router(router)
+
+# Register routers
+app.include_router(auth_router)
+app.include_router(expense_router)
 
 
 @app.get("/")
 def home():
+
     return {
         "message": "Welcome to Personal Expense Tracker API"
     }
